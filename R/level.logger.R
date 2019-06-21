@@ -1,10 +1,10 @@
 #' Set or get the priority level for a logger object.
 #'
 #' The priority level can be an integer from the set 1..5 (otherwise it will be
-#' modified sensibly to fit in that range), or a named logging level
-#' (one of \Sexpr{paste0('"', log4r:::LEVEL_NAMES, '"', collapse = ", ")}).
-#' An object of class loglevel is also accepted; other input will be coerced
-#' using \code{\link{as.loglevel}}.
+#' modified sensibly to fit in that range), or a named logging level (one of
+#' "DEBUG", "INFO", "WARN", "ERROR", or "FATAL"). An object of class loglevel
+#' is also accepted; other input will be coerced using
+#' \code{\link{as.loglevel}}.
 #'
 #' @param x An object of class logger.
 #' @param value A loglevel.
@@ -33,18 +33,11 @@
 
 #' @rdname level
 #' @export
-`level.logger` <-
-  function(x)
-  {
-    return(x[['level']])
-  }
+`level.logger` <- function(x) x$threshold
 
 #' @rdname level
 #' @export
-`level<-.logger` <-
-  function(x, value)
-  {
-    x[['level']] <- as.loglevel(value)
-    return(x)
-  }
-
+`level<-.logger` <- function(x, value) {
+  x$threshold <- as.loglevel(value)
+  x
+}
