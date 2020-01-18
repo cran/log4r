@@ -300,6 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 <h1 class="title toc-ignore">Logging Performance</h1>
+<h4 class="date">Updated as of 2020-01-17</h4>
 
 
 
@@ -415,17 +416,17 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb7-6" data-line-number="6"><span class="kw">lgr_debug</span>()</a></code></pre></div>
 <p>Info messages should print to the console. Small differences in output format are to be expected.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">log4r_info</span>()</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#&gt; INFO  [2019-09-04 17:46:26] Info message.</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#&gt; INFO  [2020-01-17 19:47:52] Info message.</span></a>
 <a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw">cat_info</span>()</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#&gt; INFO  [2019-09-04 17:46:26] Info message.</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#&gt; INFO  [2020-01-17 19:47:52] Info message.</span></a>
 <a class="sourceLine" id="cb8-5" data-line-number="5"><span class="kw">logging_info</span>()</a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt; 2019-09-04 17:46:26 INFO::Info message.</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt; 2020-01-17 19:47:52 INFO::Info message.</span></a>
 <a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw">fl_info</span>()</a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt; INFO [2019-09-04 17:46:26] Info message.</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt; INFO [2020-01-17 19:47:52] Info message.</span></a>
 <a class="sourceLine" id="cb8-9" data-line-number="9"><span class="kw">logger_info</span>()</a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="co">#&gt; INFO [2019-09-04 17:46:26] Info message.</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="co">#&gt; INFO [2020-01-17 19:47:52] Info message.</span></a>
 <a class="sourceLine" id="cb8-11" data-line-number="11"><span class="kw">lgr_info</span>()</a>
-<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">#&gt; INFO  [17:46:26.100] Info message.</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">#&gt; INFO  [19:47:52.123] Info message.</span></a></code></pre></div>
 </div>
 <div id="benchmarks" class="section level2">
 <h2>Benchmarks</h2>
@@ -456,24 +457,24 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">print</span>(info_bench, <span class="dt">order =</span> <span class="st">&quot;median&quot;</span>)</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt; Unit: microseconds</span></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt;           expr    min      lq      mean  median      uq     max neval</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt;            cat   38.5   52.40   73.9786   57.65   71.55  3005.2   500</span></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt;          log4r   34.2   57.65   73.1090   65.30   76.10  1620.4   500</span></a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="co">#&gt;         logger  234.1  277.45  323.6790  320.50  353.60  1624.0   500</span></a>
-<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">#&gt;        logging  347.6  415.75  512.0916  458.75  507.90 10692.0   500</span></a>
-<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="co">#&gt;            lgr 1373.2 1505.25 1712.7456 1562.90 1633.50 39488.1   500</span></a>
-<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="co">#&gt;  futile.logger 2451.5 2701.70 2906.5282 2794.80 2910.15  5774.6   500</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt;            cat   41.6   54.15   70.6914   60.50   71.80  2265.6   500</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt;          log4r   37.4   59.75   76.1058   67.45   80.00  1351.3   500</span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="co">#&gt;         logger  254.8  307.30  371.5422  346.15  380.95  3285.4   500</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">#&gt;        logging  369.3  459.95  542.7246  500.80  541.60 11031.2   500</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="co">#&gt;            lgr  613.9  743.85  898.7276  783.90  828.30 38575.5   500</span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="co">#&gt;  futile.logger 2629.7 3000.00 3278.6204 3099.20 3260.80  8882.3   500</span></a></code></pre></div>
 </div>
 <div id="how-long-does-it-take-to-decide-to-do-nothing" class="section level3">
 <h3>How long does it take to decide to do nothing?</h3>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">print</span>(debug_bench, <span class="dt">order =</span> <span class="st">&quot;median&quot;</span>)</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">#&gt; Unit: microseconds</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co">#&gt;           expr   min     lq     mean median     uq    max neval</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">#&gt;            cat   1.6   4.60   8.2034   6.10   6.90  913.7   500</span></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">#&gt;          log4r   7.9  14.80  22.9410  19.25  22.90 1128.0   500</span></a>
-<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="co">#&gt;        logging  24.8  40.80  59.8054  49.20  59.45 2129.2   500</span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="co">#&gt;         logger  35.9  57.45  72.7706  64.65  79.90 1056.4   500</span></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="co">#&gt;            lgr 214.6 280.30 343.3326 321.00 364.50 4310.1   500</span></a>
-<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt;  futile.logger 761.5 874.00 938.2286 910.60 947.10 3980.3   500</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co">#&gt;           expr   min     lq      mean median      uq    max neval</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">#&gt;            cat   1.8   4.70    8.7438   6.10    7.00 1098.1   500</span></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">#&gt;          log4r   9.8  15.45   24.0120  19.45   23.65 1182.6   500</span></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="co">#&gt;            lgr  13.9  23.30   34.0922  29.65   35.05 1267.5   500</span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="co">#&gt;        logging  28.6  41.25   56.1088  50.65   59.45 1205.0   500</span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="co">#&gt;         logger  41.6  58.30   74.0618  67.15   81.55 1073.7   500</span></a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt;  futile.logger 800.2 934.00 1038.9932 984.75 1034.80 5479.9   500</span></a></code></pre></div>
 </div>
 </div>
 

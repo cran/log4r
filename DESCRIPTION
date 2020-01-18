@@ -1,7 +1,7 @@
 Type: Package
 Package: log4r
-Title: A Simple Logging System for R, Based on 'log4j'
-Version: 0.3.1
+Title: A Fast and Lightweight Logging System for R, Based on 'log4j'
+Version: 0.3.2
 Authors@R: c(
     person("John Myles", "White", role = c("aut", "cph")),
     person("Kenton", "White", role = "ctb"),
@@ -20,14 +20,14 @@ Suggests: futile.logger, knitr, lgr, logger, logging, microbenchmark,
         rmarkdown, testthat
 Encoding: UTF-8
 LazyLoad: yes
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.0
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2019-09-04 17:46:30 UTC; aaronj
+Packaged: 2020-01-17 19:47:56 UTC; aaronj
 Author: John Myles White [aut, cph],
   Kenton White [ctb],
   Kirill Müller [ctb],
   Aaron Jacobs [aut, cre]
 Maintainer: Aaron Jacobs <atheriel@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-09-04 18:10:02 UTC
+Date/Publication: 2020-01-18 06:20:03 UTC
