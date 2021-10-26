@@ -7,10 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/log4r)](https://cran.r-project.org/package=log4r)
-[![Travis-CI Build
-Status](https://travis-ci.org/johnmyleswhite/log4r.svg?branch=master)](https://travis-ci.org/johnmyleswhite/log4r)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/johnmyleswhite/log4r?branch=master)](https://ci.appveyor.com/project/johnmyleswhite/log4r)
+[![R-CMD-check](https://github.com/johnmyleswhite/log4r/workflows/R-CMD-check/badge.svg)](https://github.com/johnmyleswhite/log4r/actions)
 <!-- badges: end -->
 
 **log4r** is a fast, lightweight, object-oriented approach to logging in
@@ -21,6 +18,10 @@ Log4j](https://logging.apache.org/log4j/) project.
 performance and simplicity. As such, it has fewer features – although it
 is still quite extensible, as seen below – but is much faster. See
 `vignette("performance", package = "log4r")` for details.
+
+Unlike other R logging packages, **log4r** also has first-class support
+for structured logging. See
+`vignette("structured-logging", package = "log4r")` for details.
 
 ## Installation
 
@@ -73,6 +74,12 @@ readLines(log_file)
 The `appenders` parameter takes a list, so you can log to multiple
 destinations transparently.
 
+For local development or simple batch R scripts run manually, writing log
+messages to a file for later inspection is convenient. However, for deployed R
+applications or automated scripts it is more likely you will need to send logs
+to a central location; see
+`vignette("logging-beyond-local-files", package = "log4r")`.
+
 To control the format of the messages you can change the **Layout** used
 by each appender. Layouts are functions; you can write your own quite
 easily:
@@ -85,6 +92,18 @@ my_layout <- function(level, ...) {
 logger <- logger(appenders = console_appender(my_layout))
 info(logger, "Messages should now look a little different.")
 #> 2019-09-04 16:31:04 [INFO] Messages should now look a little different.
+```
+
+With an appropriate layout, you can also use *structured logging*,
+enriching log messages with contextual fields:
+
+``` r
+logger <- logger(appenders = console_appender(logfmt_log_layout()))
+info(
+  logger, message = "processed entries", file = "catpics_01.csv",
+  entries = 4124, elapsed = 2.311
+)
+#> level=INFO ts=2021-10-22T20:19:21Z message="processed entries" file=catpics_01.csv entries=4124 elapsed=2.311
 ```
 
 ## Older APIs
