@@ -138,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <h1 class="title toc-ignore">Structured Logging</h1>
-<h4 class="date">Updated as of 2021-10-25</h4>
+<h4 class="date">Updated as of 2021-10-28</h4>
 
 
 
@@ -173,7 +173,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">remote_addr =</span> req<span class="sc">$</span>REMOTE_ADDR,</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">status =</span> res<span class="sc">$</span>status</span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {&quot;message&quot;:&quot;authentication failed&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;path&quot;:&quot;/upload&quot;,&quot;params&quot;:&quot;&quot;,&quot;user_agent&quot;:&quot;curl/7.58.0&quot;,&quot;remote_addr&quot;:&quot;124.133.52.161&quot;,&quot;status&quot;:401,&quot;level&quot;:&quot;INFO&quot;,&quot;time&quot;:&quot;2021-10-25T18:15:12Z&quot;}</span></span></code></pre></div>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {&quot;message&quot;:&quot;authentication failed&quot;,&quot;method&quot;:&quot;POST&quot;,&quot;path&quot;:&quot;/upload&quot;,&quot;params&quot;:&quot;&quot;,&quot;user_agent&quot;:&quot;curl/7.58.0&quot;,&quot;remote_addr&quot;:&quot;124.133.52.161&quot;,&quot;status&quot;:401,&quot;level&quot;:&quot;INFO&quot;,&quot;time&quot;:&quot;2021-10-28T01:56:46Z&quot;}</span></span></code></pre></div>
 </div>
 <div id="logfmt-logs" class="section level2">
 <h2>logfmt Logs</h2>
@@ -185,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">entries =</span> <span class="fu">nrow</span>(entries),</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">elapsed =</span> <span class="fu">unclass</span>(<span class="fu">difftime</span>(<span class="fu">Sys.time</span>(), start, <span class="at">units =</span> <span class="st">&quot;secs&quot;</span>))</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; level=INFO ts=2021-10-25T18:15:12Z message=&quot;processed entries&quot; file=catpics_01.csv entries=4124 elapsed=0.03516</span></span></code></pre></div>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; level=INFO ts=2021-10-28T01:56:46Z message=&quot;processed entries&quot; file=catpics_01.csv entries=4124 elapsed=0.03515</span></span></code></pre></div>
 </div>
 
 

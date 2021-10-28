@@ -33,6 +33,8 @@ test_that("logfmt layouts work correctly", {
   # Test escaping of keys and values.
   expect_match(layout("INFO", spaces = "with spaces"), 'spaces="with spaces"')
   expect_match(layout("INFO", "with spaces" = "value"), 'withspaces=value')
+  # Test dropped keys.
+  expect_false(grepl('value', layout("INFO", a = "a", "value")))
   expect_false(grepl('value', layout("INFO", " " = "value")))
   # Test precision.
   expect_match(layout("INFO", a = 1.234567, b = NULL), 'a=1.235 b=null')
@@ -42,6 +44,10 @@ test_that("logfmt layouts work correctly", {
     layout("INFO", a = data.frame(a = 1:3), b = NULL),
     'a=<omitted> b=null'
   )
+  # Test long keys and values.
+  long <- paste(sample(c(letters, "="), 1019, TRUE), collapse = "")
+  expect_match(layout("INFO", key = long), 'key=')
+  expect_match(layout("INFO", long = "value"), '=value')
 })
 
 test_that("JSON layouts work correctly", {
