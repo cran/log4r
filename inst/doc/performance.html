@@ -138,7 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <h1 class="title toc-ignore">Logging Performance</h1>
-<h4 class="date">Updated as of 2021-10-28</h4>
+<h4 class="date">Updated as of 2021-11-03</h4>
 
 
 
@@ -288,21 +288,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rlog_debug</span>()</span></code></pre></div>
 <p>Info messages should print to the console. Small differences in output format are to be expected.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log4r_info</span>()</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [2021-10-28 01:56:44] Info message.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [2021-11-03 16:36:56] Info message.</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat_info</span>()</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [2021-10-28 01:56:44] Info message.</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [2021-11-03 16:36:56] Info message.</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">logging_info</span>()</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2021-10-28 01:56:44 INFO::Info message.</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2021-11-03 16:36:56 INFO::Info message.</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fl_info</span>()</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO [2021-10-28 01:56:44] Info message.</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO [2021-11-03 16:36:56] Info message.</span></span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">logger_info</span>()</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO [2021-10-28 01:56:44] Info message.</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO [2021-11-03 16:36:56] Info message.</span></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">lgr_info</span>()</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [01:56:44.566] Info message.</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [16:36:56.760] Info message.</span></span>
 <span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">loggit_info</span>()</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {&quot;timestamp&quot;: &quot;2021-10-28T01:56:44+0000&quot;, &quot;log_lvl&quot;: &quot;INFO&quot;, &quot;log_msg&quot;: &quot;Info message.&quot;}</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {&quot;timestamp&quot;: &quot;2021-11-03T16:36:56+0000&quot;, &quot;log_lvl&quot;: &quot;INFO&quot;, &quot;log_msg&quot;: &quot;Info message.&quot;}</span></span>
 <span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rlog_info</span>()</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2021-10-28 01:56:44 [INFO] Info message.</span></span></code></pre></div>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2021-11-03 16:36:56 [INFO] Info message.</span></span></code></pre></div>
 </div>
 <div id="benchmarks" class="section level2">
 <h2>Benchmarks</h2>
@@ -336,27 +336,27 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(info_bench, <span class="at">order =</span> <span class="st">&quot;median&quot;</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unit: microseconds</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           expr   min     lq     mean median     uq     max neval</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            cat  26.5  38.20  47.6586  41.40  52.15  1476.4   500</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          log4r  27.2  50.70  59.5264  57.95  65.55  1029.4   500</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           rlog  68.1  95.85 113.4314 106.55 117.75  2795.0   500</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         logger 230.3 282.10 301.2706 293.70 308.05  3229.2   500</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  futile.logger 317.4 365.85 393.2444 377.70 392.45  3300.0   500</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        logging 341.2 376.85 412.8234 391.70 407.40  7856.9   500</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            lgr 580.6 620.45 747.4960 636.50 654.00 31746.7   500</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         loggit 756.7 789.50 842.4718 807.05 830.10  3721.9   500</span></span></code></pre></div>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            cat  27.3  38.40  54.8350  42.20  53.40  2811.2   500</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          log4r  27.5  51.55  60.5710  59.30  66.95  1063.6   500</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           rlog  63.2  96.60 109.0474 107.00 118.25  1057.1   500</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         logger 224.9 284.25 316.7576 298.50 311.85  3344.8   500</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  futile.logger 329.6 371.10 417.8544 384.55 400.60  6622.7   500</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        logging 334.5 383.55 430.3466 398.00 416.00  7507.2   500</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            lgr 581.8 623.50 723.2016 636.95 657.80 32785.8   500</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         loggit 763.6 798.40 842.3320 818.75 841.80  3912.4   500</span></span></code></pre></div>
 </div>
 <div id="how-long-does-it-take-to-decide-to-do-nothing" class="section level3">
 <h3>How long does it take to decide to do nothing?</h3>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(debug_bench, <span class="at">order =</span> <span class="st">&quot;median&quot;</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unit: microseconds</span></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           expr   min     lq     mean median     uq    max neval</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            cat   1.6   2.80   5.7712   4.35   5.40  801.9   500</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          log4r   8.5  10.70  21.7778  13.25  16.70 3042.3   500</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           rlog  11.9  15.10  27.2926  20.50  23.10 2920.0   500</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            lgr  14.4  18.10  31.8206  24.90  29.90 3015.6   500</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         logger  23.2  28.50  37.8986  38.05  43.15  856.7   500</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        logging  22.3  29.65  40.8678  43.00  48.75  851.2   500</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  futile.logger 230.2 249.95 266.5912 264.10 275.15 1191.0   500</span></span></code></pre></div>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            cat   1.7   2.70   5.7314   4.20   5.60  788.6   500</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          log4r   8.8  10.80  15.9736  13.35  16.50 1022.9   500</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           rlog  11.6  15.10  21.2040  20.70  23.45  872.8   500</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            lgr  14.2  18.40  38.2624  25.00  29.80 3101.5   500</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         logger  22.8  28.40  43.6884  32.50  43.70 3053.3   500</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        logging  21.8  28.80  41.3526  43.20  48.95 1148.5   500</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  futile.logger 228.1 250.65 267.0700 262.35 276.85 1212.5   500</span></span></code></pre></div>
 </div>
 </div>
 
