@@ -1,7 +1,7 @@
 Type: Package
 Package: log4r
 Title: A Fast and Lightweight Logging System for R, Based on 'log4j'
-Version: 0.4.2
+Version: 0.4.3
 Authors@R: c(
     person("John Myles", "White", role = c("aut", "cph")),
     person("Kenton", "White", role = "ctb"),
@@ -23,11 +23,11 @@ LazyLoad: yes
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2021-11-03 16:36:59 UTC; aaronj
+Packaged: 2022-11-25 20:11:32 UTC; aaron
 Author: John Myles White [aut, cph],
   Kenton White [ctb],
   Kirill Müller [ctb],
   Aaron Jacobs [aut, cre]
 Maintainer: Aaron Jacobs <atheriel@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-11-04 05:20:02 UTC
+Date/Publication: 2022-11-28 13:10:04 UTC
