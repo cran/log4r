@@ -1,7 +1,7 @@
 Type: Package
 Package: log4r
 Title: A Fast and Lightweight Logging System for R, Based on 'log4j'
-Version: 0.4.3
+Version: 0.4.4
 Authors@R: c(
     person("John Myles", "White", role = c("aut", "cph")),
     person("Kenton", "White", role = "ctb"),
@@ -17,17 +17,19 @@ License: Artistic-2.0
 URL: https://github.com/johnmyleswhite/log4r
 BugReports: https://github.com/johnmyleswhite/log4r/issues
 Suggests: futile.logger, httr, jsonlite, knitr, lgr, logger, logging,
-        loggit, microbenchmark, rlog, rmarkdown, rsyslog, testthat
+        loggit, microbenchmark, rlog, rmarkdown, rsyslog, testthat (>=
+        3.0.0)
 Encoding: UTF-8
 LazyLoad: yes
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
+Config/testthat/edition: 3
 NeedsCompilation: yes
-Packaged: 2022-11-25 20:11:32 UTC; aaron
+Packaged: 2024-10-12 04:35:26 UTC; aaron
 Author: John Myles White [aut, cph],
   Kenton White [ctb],
   Kirill Müller [ctb],
   Aaron Jacobs [aut, cre]
 Maintainer: Aaron Jacobs <atheriel@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-11-28 13:10:04 UTC
+Date/Publication: 2024-10-12 05:20:01 UTC

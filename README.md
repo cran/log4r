@@ -7,7 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/log4r)](https://cran.r-project.org/package=log4r)
-[![R-CMD-check](https://github.com/johnmyleswhite/log4r/workflows/R-CMD-check/badge.svg)](https://github.com/johnmyleswhite/log4r/actions)
+[![R-CMD-check](https://github.com/johnmyleswhite/log4r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/johnmyleswhite/log4r/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 **log4r** is a fast, lightweight, object-oriented approach to logging in
@@ -74,10 +74,10 @@ readLines(log_file)
 The `appenders` parameter takes a list, so you can log to multiple
 destinations transparently.
 
-For local development or simple batch R scripts run manually, writing log
-messages to a file for later inspection is convenient. However, for deployed R
-applications or automated scripts it is more likely you will need to send logs
-to a central location; see
+For local development or simple batch R scripts run manually, writing
+log messages to a file for later inspection is convenient. However, for
+deployed R applications or automated scripts it is more likely you will
+need to send logs to a central location; see
 `vignette("logging-beyond-local-files", package = "log4r")`.
 
 To control the format of the messages you can change the **Layout** used

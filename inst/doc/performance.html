@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -119,13 +119,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -330,7 +337,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Logging Performance</h1>
-<h4 class="date">Updated as of 2022-11-25</h4>
+<h4 class="date">Updated as of 2024-10-12</h4>
 
 
 
@@ -368,97 +375,100 @@ package.</p>
 <h2>Using <code>cat()</code></h2>
 <p>As a reference point, we can measure how long it takes R itself to
 write a simple message to the console:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>cat_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>() <span class="co"># Print nothing.</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>cat_info <span class="ot">&lt;-</span> <span class="cf">function</span>() <span class="fu">cat</span>(</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;INFO  [&quot;</span>, <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, <span class="at">usetz =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;] Info message.&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>cat_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="fu">cat</span>() <span class="co"># Print nothing.</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>}</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>cat_info <span class="ot">&lt;-</span> <span class="cf">function</span>() <span class="fu">cat</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="st">&quot;INFO  [&quot;</span>, <span class="fu">format</span>(<span class="fu">Sys.time</span>(), <span class="st">&quot;%Y-%m-%d %H:%M:%S&quot;</span>, <span class="at">usetz =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="st">&quot;] Info message.&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="the-log4r-package" class="section level2">
 <h2>The <strong>log4r</strong> Package</h2>
 <p>The following is a typical <strong>log4r</strong> setup:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>log4r_logger <span class="ot">&lt;-</span> log4r<span class="sc">::</span><span class="fu">logger</span>(<span class="at">threshold =</span> <span class="st">&quot;INFO&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>log4r_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  log4r<span class="sc">::</span><span class="fu">info</span>(log4r_logger, <span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>log4r_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  log4r<span class="sc">::</span><span class="fu">debug</span>(log4r_logger, <span class="st">&quot;Debug message.&quot;</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>log4r_logger <span class="ot">&lt;-</span> log4r<span class="sc">::</span><span class="fu">logger</span>(<span class="at">threshold =</span> <span class="st">&quot;INFO&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>log4r_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  log4r<span class="sc">::</span><span class="fu">info</span>(log4r_logger, <span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>}</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>log4r_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  log4r<span class="sc">::</span><span class="fu">debug</span>(log4r_logger, <span class="st">&quot;Debug message.&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="the-futile.logger-package" class="section level2">
 <h2>The <strong>futile.logger</strong> Package</h2>
 <p>The following is a typical <strong>futile.logger</strong> setup:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;futile.logger&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: futile.logger</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>futile.logger<span class="sc">::</span><span class="fu">flog.logger</span>()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>fl_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  futile.logger<span class="sc">::</span><span class="fu">flog.info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>fl_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  futile.logger<span class="sc">::</span><span class="fu">flog.debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;futile.logger&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: futile.logger</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>futile.logger<span class="sc">::</span><span class="fu">flog.logger</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>fl_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  futile.logger<span class="sc">::</span><span class="fu">flog.info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>}</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>fl_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>  futile.logger<span class="sc">::</span><span class="fu">flog.debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="the-logging-package" class="section level2">
 <h2>The <strong>logging</strong> Package</h2>
 <p>The following is what I believe to be a typical
 <strong>logging</strong> setup:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;logging&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: logging</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>logging<span class="sc">::</span><span class="fu">basicConfig</span>()</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>logging_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  logging<span class="sc">::</span><span class="fu">loginfo</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>logging_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  logging<span class="sc">::</span><span class="fu">logdebug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;logging&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: logging</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>logging<span class="sc">::</span><span class="fu">basicConfig</span>()</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>logging_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  logging<span class="sc">::</span><span class="fu">loginfo</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>}</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>logging_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  logging<span class="sc">::</span><span class="fu">logdebug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="the-logger-package" class="section level2">
 <h2>The <strong>logger</strong> Package</h2>
 <p>The following is what I believe to be a typical
 <strong>logger</strong> setup:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;logger&quot;</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: logger</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Match the behaviour of other logging packages and write to the console.</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>logger<span class="sc">::</span><span class="fu">log_appender</span>(logger<span class="sc">::</span>appender_stdout)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>logger_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  logger<span class="sc">::</span><span class="fu">log_info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>logger_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  logger<span class="sc">::</span><span class="fu">log_debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;logger&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: logger</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; Registered S3 method overwritten by &#39;logger&#39;:</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt;   method         from </span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt;   print.loglevel log4r</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Match the behaviour of other logging packages and write to the console.</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>logger<span class="sc">::</span><span class="fu">log_appender</span>(logger<span class="sc">::</span>appender_stdout)</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>logger_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  logger<span class="sc">::</span><span class="fu">log_info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>}</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>logger_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  logger<span class="sc">::</span><span class="fu">log_debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="the-lgr-package" class="section level2">
 <h2>The <strong>lgr</strong> Package</h2>
 <p>The following is what I believe to be a typical <strong>lgr</strong>
 setup:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;lgr&quot;</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: lgr</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>lgr_logger <span class="ot">&lt;-</span> lgr<span class="sc">::</span><span class="fu">get_logger</span>(<span class="st">&quot;perf-test&quot;</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>lgr_logger<span class="sc">$</span><span class="fu">set_appenders</span>(<span class="fu">list</span>(<span class="at">cons =</span> lgr<span class="sc">::</span>AppenderConsole<span class="sc">$</span><span class="fu">new</span>()))</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>lgr_logger<span class="sc">$</span><span class="fu">set_propagate</span>(<span class="cn">FALSE</span>)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>lgr_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  lgr_logger<span class="sc">$</span><span class="fu">info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>lgr_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  lgr_logger<span class="sc">$</span><span class="fu">debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;lgr&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: lgr</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>lgr_logger <span class="ot">&lt;-</span> lgr<span class="sc">::</span><span class="fu">get_logger</span>(<span class="st">&quot;perf-test&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>lgr_logger<span class="sc">$</span><span class="fu">set_appenders</span>(<span class="fu">list</span>(<span class="at">cons =</span> lgr<span class="sc">::</span>AppenderConsole<span class="sc">$</span><span class="fu">new</span>()))</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>lgr_logger<span class="sc">$</span><span class="fu">set_propagate</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>lgr_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  lgr_logger<span class="sc">$</span><span class="fu">info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>}</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>lgr_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  lgr_logger<span class="sc">$</span><span class="fu">debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="the-loggit-package" class="section level2">
 <h2>The <strong>loggit</strong> Package</h2>
@@ -467,126 +477,126 @@ setup:</p>
 set the output file to <code>/dev/null</code>. In addition,
 <strong>loggit</strong> does not have a notion of thresholds, so there
 is no “do nothing” operation to test.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;loggit&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: loggit</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (.Platform<span class="sc">$</span>OS.type <span class="sc">==</span> <span class="st">&quot;unix&quot;</span>) {</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  loggit<span class="sc">::</span><span class="fu">set_logfile</span>(<span class="st">&quot;/dev/null&quot;</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  loggit<span class="sc">::</span><span class="fu">set_logfile</span>(<span class="st">&quot;nul&quot;</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>loggit_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  loggit<span class="sc">::</span><span class="fu">loggit</span>(<span class="st">&quot;INFO&quot;</span>, <span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;loggit&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: loggit</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="cf">if</span> (.Platform<span class="sc">$</span>OS.type <span class="sc">==</span> <span class="st">&quot;unix&quot;</span>) {</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  loggit<span class="sc">::</span><span class="fu">set_logfile</span>(<span class="st">&quot;/dev/null&quot;</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  loggit<span class="sc">::</span><span class="fu">set_logfile</span>(<span class="st">&quot;nul&quot;</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>}</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>loggit_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  loggit<span class="sc">::</span><span class="fu">loggit</span>(<span class="st">&quot;INFO&quot;</span>, <span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="the-rlog-package" class="section level2">
 <h2>The <strong>rlog</strong> Package</h2>
 <p>The <strong>rlog</strong> package currently has no configuration
 options other than the threshold, which is controlled via an environment
 variable and defaults to hiding debug-level messages:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;rlog&quot;</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: rlog</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>rlog_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  rlog<span class="sc">::</span><span class="fu">log_info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>rlog_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  rlog<span class="sc">::</span><span class="fu">log_debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">requireNamespace</span>(<span class="st">&quot;rlog&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; Loading required namespace: rlog</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>rlog_info <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  rlog<span class="sc">::</span><span class="fu">log_info</span>(<span class="st">&quot;Info message.&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>}</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>rlog_debug <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  rlog<span class="sc">::</span><span class="fu">log_debug</span>(<span class="st">&quot;Debug message.&quot;</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="test-all-loggers" class="section level2">
 <h2>Test All Loggers</h2>
 <p>Debug messages should print nothing.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log4r_debug</span>()</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat_debug</span>()</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">logging_debug</span>()</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fl_debug</span>()</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">logger_debug</span>()</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">lgr_debug</span>()</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rlog_debug</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">log4r_debug</span>()</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">cat_debug</span>()</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">logging_debug</span>()</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="fu">fl_debug</span>()</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="fu">logger_debug</span>()</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="fu">lgr_debug</span>()</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="fu">rlog_debug</span>()</span></code></pre></div>
 <p>Info messages should print to the console. Small differences in
 output format are to be expected.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log4r_info</span>()</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [2022-11-25 15:11:30] Info message.</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat_info</span>()</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [2022-11-25 15:11:30] Info message.</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">logging_info</span>()</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2022-11-25 15:11:30 INFO::Info message.</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fl_info</span>()</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO [2022-11-25 15:11:30] Info message.</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">logger_info</span>()</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO [2022-11-25 15:11:30] Info message.</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">lgr_info</span>()</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; INFO  [15:11:30.223] Info message.</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">loggit_info</span>()</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {&quot;timestamp&quot;: &quot;2022-11-25T15:11:30-0500&quot;, &quot;log_lvl&quot;: &quot;INFO&quot;, &quot;log_msg&quot;: &quot;Info message.&quot;}</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="fu">rlog_info</span>()</span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2022-11-25 15:11:30 [INFO] Info message.</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">log4r_info</span>()</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; INFO  [2024-10-12 00:35:22] Info message.</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">cat_info</span>()</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; INFO  [2024-10-12 00:35:22] Info message.</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="fu">logging_info</span>()</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 2024-10-12 00:35:22.582721 INFO::Info message.</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="fu">fl_info</span>()</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; INFO [2024-10-12 00:35:22] Info message.</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="fu">logger_info</span>()</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; INFO [2024-10-12 00:35:22] Info message.</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="fu">lgr_info</span>()</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; INFO  [00:35:22.588] Info message.</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="fu">loggit_info</span>()</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; {&quot;timestamp&quot;: &quot;2024-10-12T00:35:22-0400&quot;, &quot;log_lvl&quot;: &quot;INFO&quot;, &quot;log_msg&quot;: &quot;Info message.&quot;}</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="fu">rlog_info</span>()</span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; 2024-10-12 00:35:22.590646 [INFO] Info message.</span></span></code></pre></div>
 </div>
 <div id="benchmarks" class="section level2">
 <h2>Benchmarks</h2>
 <p>The following benchmarks all loggers defined above:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>info_bench <span class="ot">&lt;-</span> microbenchmark<span class="sc">::</span><span class="fu">microbenchmark</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cat =</span> <span class="fu">cat_info</span>(),</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">log4r =</span> <span class="fu">log4r_info</span>(),</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">futile.logger =</span> <span class="fu">fl_info</span>(),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">logging =</span> <span class="fu">logging_info</span>(),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">logger =</span> <span class="fu">logger_info</span>(),</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lgr =</span> <span class="fu">lgr_info</span>(),</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">loggit =</span> <span class="fu">loggit_info</span>(),</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">rlog =</span> <span class="fu">rlog_info</span>(),</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">500</span>,</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">warmups =</span> <span class="dv">50</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>debug_bench <span class="ot">&lt;-</span> microbenchmark<span class="sc">::</span><span class="fu">microbenchmark</span>(</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">cat =</span> <span class="fu">cat_debug</span>(),</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">log4r =</span> <span class="fu">log4r_debug</span>(),</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">futile.logger =</span> <span class="fu">fl_debug</span>(),</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">logging =</span> <span class="fu">logging_debug</span>(),</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">logger =</span> <span class="fu">logger_debug</span>(),</span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">lgr =</span> <span class="fu">lgr_debug</span>(),</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">rlog =</span> <span class="fu">rlog_debug</span>(),</span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">500</span>,</span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">warmups =</span> <span class="dv">50</span>)</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>info_bench <span class="ot">&lt;-</span> microbenchmark<span class="sc">::</span><span class="fu">microbenchmark</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="at">cat =</span> <span class="fu">cat_info</span>(),</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="at">log4r =</span> <span class="fu">log4r_info</span>(),</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  <span class="at">futile.logger =</span> <span class="fu">fl_info</span>(),</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="at">logging =</span> <span class="fu">logging_info</span>(),</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">logger =</span> <span class="fu">logger_info</span>(),</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="at">lgr =</span> <span class="fu">lgr_info</span>(),</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="at">loggit =</span> <span class="fu">loggit_info</span>(),</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="at">rlog =</span> <span class="fu">rlog_info</span>(),</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">500</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">warmups =</span> <span class="dv">50</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>)</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>debug_bench <span class="ot">&lt;-</span> microbenchmark<span class="sc">::</span><span class="fu">microbenchmark</span>(</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>  <span class="at">cat =</span> <span class="fu">cat_debug</span>(),</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a>  <span class="at">log4r =</span> <span class="fu">log4r_debug</span>(),</span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>  <span class="at">futile.logger =</span> <span class="fu">fl_debug</span>(),</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>  <span class="at">logging =</span> <span class="fu">logging_debug</span>(),</span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>  <span class="at">logger =</span> <span class="fu">logger_debug</span>(),</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>  <span class="at">lgr =</span> <span class="fu">lgr_debug</span>(),</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>  <span class="at">rlog =</span> <span class="fu">rlog_debug</span>(),</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>  <span class="at">times =</span> <span class="dv">500</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>  <span class="at">control =</span> <span class="fu">list</span>(<span class="at">warmups =</span> <span class="dv">50</span>)</span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>)</span></code></pre></div>
 <div id="how-long-does-it-take-to-print-messages" class="section level3">
 <h3>How long does it take to print messages?</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(info_bench, <span class="at">order =</span> <span class="st">&quot;median&quot;</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unit: microseconds</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           expr      min        lq       mean    median        uq       max</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            cat   19.727   24.8665   29.67838   27.4510   30.4120  1059.446</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          log4r   14.296   26.0990   38.78562   32.0350   38.8730  2111.388</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           rlog   44.754   59.5615   67.99791   66.2240   73.0670   744.355</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         logger  152.856  175.9850  196.45468  186.4345  200.5960  2265.367</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        logging  195.847  222.2560  252.33351  233.1320  248.1000  5634.985</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            lgr  371.837  402.0790  498.85653  415.8595  437.0245 25077.198</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         loggit  514.625  551.1530  632.20753  567.2740  587.6315  3101.445</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  futile.logger 1509.811 1593.7180 1680.18994 1626.2340 1662.5675  5869.816</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  neval</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    500</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">print</span>(info_bench, <span class="at">order =</span> <span class="st">&quot;median&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; Unit: microseconds</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt;           expr      min        lq       mean    median        uq       max</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt;          log4r   24.606   32.9470   36.46860   34.4645   36.5990   790.553</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt;            cat   42.360   49.0670   54.74075   52.3280   55.2140  1174.072</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt;           rlog   72.807   86.8880   91.64763   89.7235   93.0645   760.426</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt;         logger  187.802  208.6260  227.08602  213.5105  221.2045  2559.952</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt;        logging  250.289  271.4195  297.23647  277.9565  285.8615  6043.315</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt;            lgr  410.149  433.6680  514.84438  442.4900  455.7845 27092.424</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt;         loggit  551.164  582.5325  614.46588  592.3410  606.4575  3004.305</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt;  futile.logger 1781.251 1837.2360 1975.10361 1859.8330 1887.3850  6475.376</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt;  neval</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt;    500</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt;    500</span></span></code></pre></div>
 </div>
 <div id="how-long-does-it-take-to-decide-to-do-nothing" class="section level3">
 <h3>How long does it take to decide to do nothing?</h3>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(debug_bench, <span class="at">order =</span> <span class="st">&quot;median&quot;</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Unit: microseconds</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           expr     min       lq      mean   median       uq      max neval</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            cat   1.834   2.5345   4.58175   3.2560   3.5260  757.471   500</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          log4r   2.444   3.2160   5.39048   3.9825   4.7490  684.975   500</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           rlog   6.523   8.0100  10.84480  10.1340  10.9705  607.769   500</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            lgr  11.913  13.9415  21.90749  16.8265  17.6530 2301.315   500</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         logger  14.868  17.8930  26.87330  22.0060  23.4440 2274.245   500</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        logging  14.498  17.4125  22.32278  22.4620  24.1250  634.230   500</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  futile.logger 474.359 494.3515 524.52623 501.6405 512.5060 4638.196   500</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">print</span>(debug_bench, <span class="at">order =</span> <span class="st">&quot;median&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; Unit: microseconds</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt;           expr     min       lq       mean  median       uq      max neval</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt;            cat   2.124   2.8000   4.561908   3.467   3.6870  628.318   500</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt;          log4r   2.775   3.2810   5.496310   3.977   4.8240  727.564   500</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt;           rlog   6.913   7.9650  10.732968   9.954  10.6800  648.016   500</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt;            lgr  13.566  15.3140  19.107736  18.404  19.3415  826.921   500</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt;        logging  16.812  19.1210  24.741822  22.938  26.2090  919.996   500</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt;         logger  16.641  18.7955  28.088108  23.219  24.2955 2302.388   500</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt;  futile.logger 544.782 560.7920 592.952722 567.505 574.5425 4851.369   500</span></span></code></pre></div>
 </div>
 </div>
 
